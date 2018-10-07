@@ -1,3 +1,5 @@
+*This Project is currently in alpha state, being tested*
+
 # rds-postgres-backup-s3-secure
 This docker image is designed to be used on AWS ECS. It creates a dump of a postgres database on RDS, compresses it, encrypts it using assymetric crypto, and uploads it to s3. All permissions are managed via IAM.
 
