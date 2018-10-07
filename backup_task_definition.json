@@ -1,0 +1,53 @@
+[
+  {
+    "name": "authory-db-backup",
+    "image": "ejoebstl/rds-postgres-backup-s3-secure",
+    "networkMode": "awsvpc",
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${log_group}",
+        "awslogs-region": "${region}",
+        "awslogs-stream-prefix": "db-backup-${environment}"
+      }
+    },
+    "environment": [
+      {
+        "name": "ENVIRONMENT",
+        "value": "${environment}"
+      },
+      {
+        "name": "REGION",
+        "value": "${region}"
+      },
+      {
+        "name": "POSTGRES_DATABASE",
+        "value": "${postgres_database}"
+      },
+      {
+        "name": "POSTGRES_HOST",
+        "value": "${postgres_host}"
+      },
+      {
+        "name": "POSTGRES_USER",
+        "value": "${postgres_user}"
+      },
+      {
+        "name": "POSTGRES_PORT",
+        "value": "${postgres_port}"
+      },
+      {
+        "name": "S3_BUCKET",
+        "value": "${s3_bucket}"
+      },
+      {
+        "name": "S3_PREFIX",
+        "value": "${s3_prefix}"
+      },
+      {
+        "name": "OPENSSL_PUBLIC_KEY",
+        "value": "${openssl_public_key}"
+      }
+    ]
+  }
+]
