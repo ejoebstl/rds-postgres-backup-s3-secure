@@ -46,10 +46,11 @@ pg_dump -h "${POSTGRES_HOST}" -p "${POSTGRES_PORT}" -U ${POSTGRES_USER} "dbname=
 
 # Encrypt
 echo "Encrypting backup..."
+openssl version
 echo "${OPENSSL_PUBLIC_KEY}" > pub.pem
-openssl rand 196 > key.bin
-openssl enc -aes-256-cbc -salt -in dump.sql.bz -out dump.sql.bz.enc -pass file:./key.bin 
-openssl rsautl -encrypt -inkey pub.pem  -pubin -in key.bin -out key.bin.enc
+openssl rand -base64 128 > key.txt
+openssl enc -aes-256-cbc -salt -in dump.sql.bz -out dump.sql.bz.enc -md sha256 -pass file:./key.txt
+openssl rsautl -encrypt -inkey pub.pem  -pubin -in key.txt -out key.txt.enc
 
 # Upload
 SIZE=$(du -h dump.sql.bz.enc| cut -f1)
@@ -58,6 +59,6 @@ echo "Uploading backup..."
 
 # Upload, expected size param used for large backup (>5G), according to AWS docs. 
 aws s3 cp dump.sql.bz.enc "s3://$S3_BUCKET/$S3_PREFIX/${FILENAME}.sql.bz.enc" --expected-size "${SIZE}"
-aws s3 cp key.bin.enc "s3://$S3_BUCKET/$S3_PREFIX/${FILENAME}.key.bin.enc"
+aws s3 cp key.txt.enc "s3://$S3_BUCKET/$S3_PREFIX/${FILENAME}.key.txt.enc"
 
 echo "Done."

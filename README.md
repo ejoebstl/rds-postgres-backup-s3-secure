@@ -108,6 +108,8 @@ The container requires the following environment variables to be set:
 
 ### Decrypting
 
+*These commands were tested on OpenSSL 1.1.1*
+
 To decrypt a backup, decrypt the encrypted key fist, *using your private key*:
 
 ```bash
@@ -117,7 +119,7 @@ openssl rsautl -decrypt -inkey private_key.pem -in key.bin.enc -out key.bin.dec
 Then, decrypt the backup *using the encrypted key*:
 
 ```bash
-openssl enc -d -aes-256-cbc -salt -in backup.sql.gz.enc -out backup.sql.gz -pbkdf2 --pass file:./key.bin.dec
+openssl enc -d -aes-256-cbc -salt -in backup.sql.gz.enc -out backup.sql.gz --pass file:./key.bin.dec
 ```
 
 Finally, decompress the decrypted file:
@@ -130,5 +132,6 @@ bzip2 -d backup.sql.gz
 Please test your backups regularly.   
 If the private key is lost, all backups encrypted with it are lost as well.
 
-## Planned extensions
-* A terraform module to schedule backups on an ECS cluster
+## Planned todos
+* A terraform module to schedule backups on an ECS cluster.
+* Move to OpenSSL 1.1 with secure key derivation, as soon as alpine supports it. 
