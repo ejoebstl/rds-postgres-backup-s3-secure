@@ -1,5 +1,5 @@
 #! /bin/bash
-set -euxo pipefail
+set -euo pipefail
 
 # Check environment
 if [ -z "${POSTGRES_DATABASE:-}" ]; then
@@ -35,7 +35,6 @@ if [ -z "${OPENSSL_PUBLIC_KEY:-}" ]; then
 fi
 
 # Fetch access token for a database we have access to, configured via IAM
-echo aws rds generate-db-auth-token --hostname ${POSTGRES_HOST} --port ${POSTGRES_PORT} --username ${POSTGRES_USER} --region ${REGION}
 export PGPASSWORD=$(aws rds generate-db-auth-token --hostname ${POSTGRES_HOST} --port ${POSTGRES_PORT} --username ${POSTGRES_USER} --region ${REGION})
 
 FILENAME=${POSTGRES_DATABASE}_$(date +"%Y-%m-%dT%H:%M:%SZ")
@@ -49,7 +48,7 @@ pg_dump -h "${POSTGRES_HOST}" -p "${POSTGRES_PORT}" -U ${POSTGRES_USER} "dbname=
 echo "Encrypting backup..."
 echo "${OPENSSL_PUBLIC_KEY}" > pub.pem
 openssl rand 196 > key.bin
-openssl enc -aes-256-cbc -salt -in dump.sql.bz -out dump.sql.bz.enc -pbkdf2 --pass file:./key.bin 
+openssl enc -aes-256-cbc -salt -in dump.sql.bz -out dump.sql.bz.enc -pass file:./key.bin 
 openssl rsautl -encrypt -inkey pub.pem  -pubin -in key.bin -out key.bin.enc
 
 # Upload
@@ -58,7 +57,7 @@ echo "Backup size: ${SIZE}"
 echo "Uploading backup..."
 
 # Upload, expected size param used for large backup (>5G), according to AWS docs. 
-aws s3 cp dump.sql.bz.enc --expected-size "${SIZE}" "s3://$S3_BUCKET/$S3_PREFIX/${FILENAME}.sql.bz.enc"
-aws s3 cp key.bin.enc --expected-size "${SIZE}" "s3://$S3_BUCKET/$S3_PREFIX/${FILENAME}.key.bin.enc"
+aws s3 cp dump.sql.bz.enc "s3://$S3_BUCKET/$S3_PREFIX/${FILENAME}.sql.bz.enc" --expected-size "${SIZE}"
+aws s3 cp key.bin.enc "s3://$S3_BUCKET/$S3_PREFIX/${FILENAME}.key.bin.enc"
 
 echo "Done."
