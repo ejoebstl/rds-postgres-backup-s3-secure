@@ -1,5 +1,5 @@
 *This Project is currently in beta state, being tested. Please help by giving feedback.*
-*There is an issue with IAM authentication on ECS, which makes this image quite useless. [The AWS Team](https://github.com/aws/amazon-ecs-agent/issues/1604) is working on resolving the issue*
+*There is currently an issue with IAM authentication for postgres on ECS, please refer to the workaround mentioned [here](https://github.com/aws/amazon-ecs-agent/issues/1604).*
 
 # rds-postgres-backup-s3-secure
 This docker image is designed to be used on AWS ECS. It creates a dump of a postgres database on RDS, compresses it, encrypts it using assymetric crypto, and uploads it to s3. All permissions are managed via IAM.
