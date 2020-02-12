@@ -47,6 +47,10 @@
       {
         "name": "OPENSSL_PUBLIC_KEY",
         "value": "${openssl_public_key}"
+      },
+      {
+        "name": "RATE_LIMIT",
+        "value:": "10M"
       }
     ]
   }
