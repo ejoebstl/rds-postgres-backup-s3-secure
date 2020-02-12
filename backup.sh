@@ -37,28 +37,31 @@ fi
 # Fetch access token for a database we have access to, configured via IAM
 export PGPASSWORD=$(aws rds generate-db-auth-token --hostname ${POSTGRES_HOST} --port ${POSTGRES_PORT} --username ${POSTGRES_USER} --region ${REGION})
 
+echo "Printing Volume Information"
+df -h .
+
 FILENAME=${POSTGRES_DATABASE}_$(date +"%Y-%m-%dT%H:%M:%SZ")
 echo "Using Filename: ${FILENAME}"
 
-# Backup, compress,
-echo "Fetching DB dump..."
-pg_dump -h "${POSTGRES_HOST}" -p "${POSTGRES_PORT}" -U ${POSTGRES_USER} "dbname=${POSTGRES_DATABASE} sslmode=verify-full sslrootcert=rds_root.pem" | bzip2 > dump.sql.bz
 
-# Encrypt
-echo "Encrypting backup..."
+# Generate encryption keys
+echo "Generating encryption keys..."
 openssl version
 echo "${OPENSSL_PUBLIC_KEY}" > pub.pem
 openssl rand -base64 128 > key.txt
-openssl enc -aes-256-cbc -salt -in dump.sql.bz -out dump.sql.bz.enc -md sha256 -pass file:./key.txt
-openssl rsautl -encrypt -inkey pub.pem  -pubin -in key.txt -out key.txt.enc
+openssl rsautl -encrypt -inkey pub.pem -pubin -in key.txt -out key.txt.enc
 
-# Upload
-SIZE=$(du -h dump.sql.bz.enc| cut -f1)
-echo "Backup size: ${SIZE}"
-echo "Uploading backup..."
-
-# Upload, expected size param used for large backup (>5G), according to AWS docs. 
-aws s3 cp dump.sql.bz.enc "s3://$S3_BUCKET/$S3_PREFIX/${FILENAME}.sql.bz.enc" --expected-size "${SIZE}"
+# Upload key.
+echo "Uploading encrypted key..."
 aws s3 cp key.txt.enc "s3://$S3_BUCKET/$S3_PREFIX/${FILENAME}.key.txt.enc"
+
+# Backup, compress, encrypt, upload on the fly.
+echo "Fetching, compressing, encrypting, uploading DB dump..."
+pg_dump -h "${POSTGRES_HOST}" -p "${POSTGRES_PORT}" -U ${POSTGRES_USER} "dbname=${POSTGRES_DATABASE} sslmode=verify-full sslrootcert=rds_root.pem" |\
+bzip2 |\
+openssl enc -aes-256-cbc -salt -md sha256 -pass file:./key.txt |\
+aws s3 cp - "s3://$S3_BUCKET/$S3_PREFIX/${FILENAME}.sql.bz.enc"
+
+# Note: For a backup larger than 50GB, we would need to use the --expected-size parameter.
 
 echo "Done."
