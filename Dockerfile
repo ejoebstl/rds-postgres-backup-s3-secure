@@ -16,6 +16,9 @@ RUN apk add bzip2
 # Add openssl for encrypted backup
 RUN apk add openssl
 
+# Add pv for limiting the throughput
+RUN apk add pv
+
 # Finally add a bash for running our script
 RUN apk add bash
 
@@ -34,6 +37,7 @@ ENV POSTGRES_USER=
 ENV S3_BUCKET=
 ENV S3_PREFIX=backups
 ENV OPENSSL_PUBLIC_KEY=
+ENV RATE_LIMIT=10M
 
 ADD backup.sh backup.sh
 

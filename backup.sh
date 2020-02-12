@@ -34,6 +34,10 @@ if [ -z "${OPENSSL_PUBLIC_KEY:-}" ]; then
   echo "OPENSSL_PUBLIC_KEY was not set"
 fi
 
+if [ -z "${RATE_LIMIT:-}" ]; then
+  echo "RATE_LIMIT was not set"
+fi
+
 # Fetch access token for a database we have access to, configured via IAM
 export PGPASSWORD=$(aws rds generate-db-auth-token --hostname ${POSTGRES_HOST} --port ${POSTGRES_PORT} --username ${POSTGRES_USER} --region ${REGION})
 
@@ -58,6 +62,7 @@ aws s3 cp key.txt.enc "s3://$S3_BUCKET/$S3_PREFIX/${FILENAME}.key.txt.enc"
 # Backup, compress, encrypt, upload on the fly.
 echo "Fetching, compressing, encrypting, uploading DB dump..."
 pg_dump -h "${POSTGRES_HOST}" -p "${POSTGRES_PORT}" -U ${POSTGRES_USER} "dbname=${POSTGRES_DATABASE} sslmode=verify-full sslrootcert=rds_root.pem" |\
+pv -L ${RATE_LIMIT} -r -b -i 60 -f |\
 bzip2 |\
 openssl enc -aes-256-cbc -salt -md sha256 -pass file:./key.txt |\
 aws s3 cp - "s3://$S3_BUCKET/$S3_PREFIX/${FILENAME}.sql.bz.enc"
