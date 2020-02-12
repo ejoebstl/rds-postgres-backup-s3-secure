@@ -64,7 +64,7 @@ echo "Fetching, compressing, encrypting, uploading DB dump..."
 # Stream redirections are necessary so we can see pipe viewer output.
 # We need to replace carrige returns by new lines.
 { pg_dump -h "${POSTGRES_HOST}" -p "${POSTGRES_PORT}" -U ${POSTGRES_USER} "dbname=${POSTGRES_DATABASE} sslmode=verify-full sslrootcert=rds_root.pem" |\
-pv -L ${RATE_LIMIT} -r -b -i 10 -f 2>&3 |\
+pv -L ${RATE_LIMIT} -r -b -i 60 -f 2>&3 |\
 bzip2 |\
 openssl enc -aes-256-cbc -salt -md sha256 -pass file:./key.txt |\
 aws s3 cp - "s3://$S3_BUCKET/$S3_PREFIX/${FILENAME}.sql.bz.enc"; } 3>&1 | tr '\015' '\012'
