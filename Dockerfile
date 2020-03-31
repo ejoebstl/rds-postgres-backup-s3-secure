@@ -24,7 +24,7 @@ RUN apk add bash
 
 # Fetch RDS root cert, then remove curl again
 RUN apk add curl
-RUN curl -s https://s3.amazonaws.com/rds-downloads/rds-ca-2015-root.pem --output rds_root.pem 
+RUN curl -s https://s3.amazonaws.com/rds-downloads/rds-ca-2019-root.pem --output rds_root.pem 
 RUN apk del curl
 
 # Clear APK cache for a small image
