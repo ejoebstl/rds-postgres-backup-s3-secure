@@ -5,7 +5,7 @@ This docker image is designed to be used on AWS ECS. It creates a dump of a post
 
 This image was made to fullfil use cases where data is sensitive and security is of concern: 
 * No hardcoded access keys are used. Even if the container logs or the container configuration are leaked, the database can not be acessed. 
-* The backup is encrypted using a public key, while the private key does not need to be exposed, ever. Not even and administrative AWS user could decrypt the backup if the private key is kept secure. 
+* The backup is encrypted using a public key, while the private key does not need to be exposed, ever. Not even an administrative AWS user could decrypt the backup if the private key is kept secure. 
 
 This approach is a bit more complicated than just using access keys and relying on the encryption of S3. If that would be sufficient, consider using [another image](https://github.com/schickling/dockerfiles/tree/master/postgres-backup-s3). 
 
