@@ -102,7 +102,8 @@ The container requires the following environment variables to be set:
 `POSTGRES_USER`, the database user with [permissions for pg_dump](https://serverfault.com/questions/249172/what-grants-are-required-to-run-pg-dump) and IAM authentication enabled  
 `S3_BUCKET`, the name of the S3 bucket to upload the backup to  
 `S3_PREFIX`, prefix which will be prepended to the upload path (default: `backups`)  
-`OPENSSL_PUBLIC_KEY`, the public key 
+`OPENSSL_PUBLIC_KEY`, the public key  
+
 `RATE_LMIT`, rate limiting of data transfer out of `pg_dump`. This can be used to avoid runing out of IOPS in RDS. A `t2.medium` instance dumpy about 6MB/s of data at maximum speed. For details of the format, please refer the documentation of [pv](http://www.ivarch.com/programs/quickref/pv.shtml).
 
 ### Decrypting
