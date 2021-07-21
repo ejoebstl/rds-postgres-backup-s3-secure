@@ -36,7 +36,7 @@ if [ -z "${S3_PREFIX:-}" ]; then
 fi
 
 if [ -z "${S3_REGION:-}" ]; then
-  S3_REGION=REGION
+  S3_REGION=$REGION
 fi
 
 if [ -z "${OPENSSL_PUBLIC_KEY:-}" ]; then
@@ -65,8 +65,8 @@ openssl rand -base64 128 > key.txt
 openssl rsautl -encrypt -inkey pub.pem -pubin -in key.txt -out key.txt.enc
 
 # Upload key.
-echo "Uploading encrypted key: aws s3 cp key.txt.enc \"s3://$S3_BUCKET/$S3_PREFIX/${FILENAME}.key.txt.enc\" --region=$REGION"
-aws s3 cp key.txt.enc "s3://$S3_BUCKET/$S3_PREFIX/${FILENAME}.key.txt.enc" --region=$REGION
+echo "Uploading encrypted key: aws s3 cp key.txt.enc \"s3://$S3_BUCKET/$S3_PREFIX/${FILENAME}.key.txt.enc\" --region=$S3_REGION"
+aws s3 cp key.txt.enc "s3://$S3_BUCKET/$S3_PREFIX/${FILENAME}.key.txt.enc" --region=$S3_REGION
 
 # Backup, compress, encrypt, upload on the fly.
 echo "Fetching, compressing, encrypting, uploading DB dump..."
