@@ -36,6 +36,7 @@ if [ -z "${S3_PREFIX:-}" ]; then
 fi
 
 if [ -z "${S3_REGION:-}" ]; then
+  echo "S3_BUCKET not set, using \$REGION ($REGION)"
   S3_REGION=$REGION
 fi
 
