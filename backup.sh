@@ -77,7 +77,7 @@ echo "Fetching, compressing, encrypting, uploading DB dump..."
 pv -L ${RATE_LIMIT} -r -b -i 60 -f 2>&3 |\
 bzip2 |\
 openssl enc -aes-256-cbc -salt -md sha256 -pass file:./key.txt |\
-aws s3 cp - "s3://$S3_BUCKET/$S3_PREFIX/${FILENAME}.sql.bz.enc"; } 3>&1 | tr '\015' '\012'
+aws s3 cp - "s3://$S3_BUCKET/$S3_PREFIX/${FILENAME}.sql.bz.enc" --region=$S3_REGION; } 3>&1 | tr '\015' '\012'
 
 # Note: For a backup larger than 50GB, we would need to use the --expected-size parameter.
 
