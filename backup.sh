@@ -65,7 +65,7 @@ openssl rand -base64 128 > key.txt
 openssl rsautl -encrypt -inkey pub.pem -pubin -in key.txt -out key.txt.enc
 
 # Upload key.
-echo "Uploading encrypted key..."
+echo "Uploading encrypted key: aws s3 cp key.txt.enc \"s3://$S3_BUCKET/$S3_PREFIX/${FILENAME}.key.txt.enc\" --region=$REGION"
 aws s3 cp key.txt.enc "s3://$S3_BUCKET/$S3_PREFIX/${FILENAME}.key.txt.enc" --region=$REGION
 
 # Backup, compress, encrypt, upload on the fly.

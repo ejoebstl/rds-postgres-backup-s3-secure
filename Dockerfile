@@ -6,9 +6,8 @@ RUN apk update
 RUN apk add postgresql-client
 
 # Install aws cli
-RUN apk add python py2-pip
+RUN apk add python3 py3-pip
 RUN pip install awscli
-RUN apk del py2-pip
 
 # Add bzip2 for a compressed backup
 RUN apk add bzip2
@@ -26,9 +25,6 @@ RUN apk add bash
 RUN apk add curl
 RUN curl -s https://s3.amazonaws.com/rds-downloads/rds-ca-2019-root.pem --output rds_root.pem 
 RUN apk del curl
-
-# Clear APK cache for a small image
-RUN rm -rf /var/cache/apk?*
 
 ENV POSTGRES_DATABASE=
 ENV POSTGRES_HOST=
