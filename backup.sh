@@ -2,6 +2,11 @@
 set -euo pipefail
 
 # Check environment
+
+if [ -z "${REGION:-}" ]; then
+  echo "REGION was not set"
+fi
+
 if [ -z "${POSTGRES_DATABASE:-}" ]; then
   echo "POSTGRES_DATABASE was not set"
 fi
@@ -28,6 +33,10 @@ fi
 
 if [ -z "${S3_PREFIX:-}" ]; then
   echo "S3_BUCKET was not set"
+fi
+
+if [ -z "${S3_REGION:-}" ]; then
+  S3_REGION=REGION
 fi
 
 if [ -z "${OPENSSL_PUBLIC_KEY:-}" ]; then
@@ -57,7 +66,7 @@ openssl rsautl -encrypt -inkey pub.pem -pubin -in key.txt -out key.txt.enc
 
 # Upload key.
 echo "Uploading encrypted key..."
-aws s3 cp key.txt.enc "s3://$S3_BUCKET/$S3_PREFIX/${FILENAME}.key.txt.enc"
+aws s3 cp key.txt.enc "s3://$S3_BUCKET/$S3_PREFIX/${FILENAME}.key.txt.enc" --region=$REGION
 
 # Backup, compress, encrypt, upload on the fly.
 echo "Fetching, compressing, encrypting, uploading DB dump..."

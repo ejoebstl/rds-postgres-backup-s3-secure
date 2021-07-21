@@ -96,12 +96,14 @@ The following is a minimal example of a useable role policy:
 
 The container requires the following environment variables to be set: 
 
+`REGION`, Region of database.
 `POSTGRES_DATABASE`, name of the database  
 `POSTGRES_HOST`, the name of the RDS instance  
 `POSTGRES_PORT`, the port of the RDS instance (default: 5432)   
 `POSTGRES_USER`, the database user with [permissions for pg_dump](https://serverfault.com/questions/249172/what-grants-are-required-to-run-pg-dump) and IAM authentication enabled  
 `S3_BUCKET`, the name of the S3 bucket to upload the backup to  
-`S3_PREFIX`, prefix which will be prepended to the upload path (default: `backups`)  
+`S3_PREFIX`, prefix which will be prepended to the upload path (default: `backups`)
+`S3_REGION`, region of S3 bucket. If not set, default to `$REGION`.
 `ENV OPENSSL_PUBLIC_KEY`, the public key
 `RATE_LMIT`, rate limiting of data transfer out of `pg_dump`. This can be used to avoid runing out of IOPS in RDS. A `t2.medium` instance dumpy about 6MB/s of data at maximum speed. For details of the format, please refer the documentation of [pv](http://www.ivarch.com/programs/quickref/pv.shtml).
 
