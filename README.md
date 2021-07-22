@@ -136,3 +136,14 @@ If the private key is lost, all backups encrypted with it are lost as well.
 ## Planned todos
 * A terraform module to schedule backups on an ECS cluster.
 * Move to OpenSSL 1.1 with secure key derivation, as soon as alpine supports it. 
+
+## Troubleshooting
+
+If you get an error like the following during decrypting the key file, the private key is likely incorrect. 
+
+```
+RSA operation error
+139650942215488:error:0407109F:rsa routines:RSA_padding_check_PKCS1_type_2:pkcs decoding error:crypto/rsa/rsa_pk1.c:251:
+139650942215488:error:04065072:rsa routines:rsa_ossl_private_decrypt:padding check failed:crypto/rsa/rsa_ossl.c:491:
+```
+
